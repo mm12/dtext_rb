@@ -501,6 +501,7 @@ test2[/ltable]
     assert_parse_id_link("dtext-takedown-id-link", "/takedowns/1234", "take down request #1234", display: "takedown #1234")
     assert_parse_id_link("dtext-ticket-id-link", "/tickets/1234", "ticket #1234")
     assert_parse_id_link("dtext-wiki-page-id-link", "/wiki_pages/1234", "wiki #1234")
+    assert_parse_id_link("dtext-avoid-posting-id-link", "/avoid_postings/1234", display: "avoid posting #1234")
   end
 
   def test_boundary_exploit
