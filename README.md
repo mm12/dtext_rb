@@ -4,9 +4,9 @@ Uses the [ragel state machine](https://github.com/adrian-thurston/ragel) to gene
 
 ## Getting started
 
-Most of the changes will only need to touch `dtext.rl`, the rest of the files will be generated for you by running either `rake compile` or `rake test`. Take a look at [this inofficial quickstart guide](https://github.com/calio/ragel-cheat-sheet) or the [complete official documentation](http://www.colm.net/files/ragel/ragel-guide-6.10.pdf) if you want to know more about how ragel works.
+Most of the changes will only need to touch `dtext.rl`, the rest of the files will be generated for you by running either `rake compile` or `rake test`. Take a look at [this unofficial quickstart guide](https://github.com/calio/ragel-cheat-sheet) or the [complete official documentation](http://www.colm.net/files/ragel/ragel-guide-6.10.pdf) if you want to know more about how ragel works.
 
-There's a `docker-compose.yml` which you can use to quickly run the most common commands without installing everything locally. Usable like this: `docker-compose run --rm rake test`. You will need to run `docker-compse build` once beforehand.
+There's a `docker-compose.yml` which you can use to quickly run the most common commands without installing everything locally. Usable like this: `docker-compose run --rm rake test`. You will need to run `docker-compose build` once beforehand.
 
 ## Releasing a new version for usage in e621
 
