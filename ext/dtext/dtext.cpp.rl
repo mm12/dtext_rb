@@ -557,15 +557,6 @@ table := |*
 *|;
 
 main := |*
-  '\\`' => {
-    append("`");
-  };
-
-  '`' => {
-    append("<span class=\"inline-code\">");
-    fcall inline_code;
-  };
-
   header => {
     static element_t blocks[] = { BLOCK_H1, BLOCK_H2, BLOCK_H3, BLOCK_H4, BLOCK_H5, BLOCK_H6 };
     char header = *a1;
