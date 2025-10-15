@@ -7,7 +7,7 @@
 	// The .devcontainer/docker-compose.yml file contains any overrides you need/want to make.
 	"dockerComposeFile": [
 		"../docker-compose.yml",
-		"docker-compose.yml"
+		"../.devcontainer/docker-compose.yml"
 	],
 
 	"overrideCommand": false,
@@ -29,20 +29,23 @@
 	},
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
-	// "features": {},
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:2": {},
+    "ghcr.io/devcontainers/features/git:1": {}
+  },
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
 
 	// Start the 'dtext' service automatically when the devcontainer starts so the image
 	// and project mount are available.
-	"runServices": ["dtext"]
+	"runServices": ["dtext"],
 
 	// Uncomment the next line if you want to keep your containers running after VS Code shuts down.
 	// "shutdownAction": "none",
 
 	// Uncomment the next line to run commands after the container is created.
-	// "postCreateCommand": "cat /etc/os-release",
+	"postCreateCommand": "apk add docker-cli-compose"
 
 	// Configure tool-specific properties.
 	// "customizations": {},
