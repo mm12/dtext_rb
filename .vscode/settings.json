@@ -1,5 +1,6 @@
 {
   "search.exclude": {
     "ext/dtext/dtext.cpp": true
-  }
+  },
+  "editor.tabSize": 2
 }

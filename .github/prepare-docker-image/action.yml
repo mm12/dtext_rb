@@ -1,0 +1,22 @@
+name: Load Docker Image
+description: Load Docker Image
+
+runs:
+  using: composite
+  steps:
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    - name: Build
+      uses: docker/build-push-action@v4
+      with:
+        cache-from: type=gha
+        load: true
+        tags: dtext
+
+    - name: Set docker run command
+      run: |
+        # Run the container with the repository mounted at /app and CI env set.
+        # The resulting variable can be used like: $DOCKER_RUN bundle exec rake test
+        echo "DOCKER_RUN=docker run --rm -e CI=true -v $GITHUB_WORKSPACE:/app -w /app dtext" >> "$GITHUB_ENV"
+      shell: bash
