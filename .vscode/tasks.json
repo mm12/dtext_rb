@@ -1,0 +1,38 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "dtext: build",
+      "type": "shell",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": [],
+  "command": "docker compose build"
+    },
+    {
+      "label": "dtext: compile",
+      "type": "shell",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": [],
+  "command": "docker compose run --rm rake compile"
+    },
+    {
+      "label": "dtext: test",
+      "type": "shell",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": [],
+  "command": "docker compose run --rm rake test"
+    }
+  ]
+}

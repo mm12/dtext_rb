@@ -1,6 +1,0 @@
-version: '3'
-services:
-  dtext:
-    command: tail -f /dev/null
-    stdin_open: true
-    tty: true
