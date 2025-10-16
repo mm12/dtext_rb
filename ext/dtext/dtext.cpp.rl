@@ -2,6 +2,7 @@
 
 #include <string.h>
 #include <algorithm>
+#include <cctype>
 #include <tuple>
 
 #ifdef DEBUG
@@ -170,10 +171,16 @@ ws = ' ' | '\t';
 nonperiod = graph - ('.' | '"');
 header = 'h'i [123456] >mark_a1 %mark_a2 '.' ws*;
 
-section_open = '[section]'i;
-section_open_expanded = '[section,expanded]'i;
-section_open_aliased = '[section='i (nonbracket+ >mark_a1 %mark_a2) ']';
-section_open_aliased_expanded = '[section,expanded='i (nonbracket+ >mark_a1 %mark_a2) ']';
+# Generalized section opener: capture any attributes after 'section' (flags like
+# "expanded" and an optional summary after '=') into a single mark so the
+# C++ handler can parse them. This avoids combinatorial permutations when
+# adding more optional attributes.
+# Examples matched:
+#   [section]
+#   [section,expanded]
+#   [section=Summary]
+#   [section,expanded=Summary]
+section_open = '[section'i ( ( '=' | ',' ) >mark_a1 nonbracket* %mark_a2 )? ']';
 section_close = '[/section'i (']' when in_section);
 
 quote_open = '[quote]'i;
@@ -453,7 +460,7 @@ inline := |*
     fret;
   };
 
-  (section_open | section_open_expanded | section_open_aliased | section_open_aliased_expanded) => {
+  section_open => {
     g_debug("inline [section]");
     dstack_close_leaf_blocks();
     fexec ts;
@@ -654,21 +661,51 @@ main := |*
   };
 
   section_open space* => {
-    append_section({}, false);
-  };
+    // Parse the optional attributes captured in a1/a2. The grammar marks the
+    // attribute substring (if present) starting at a1 and ending at a2. It can
+    // contain flags like "expanded" and/or an alias/summary after '='.
+    bool initially_open = false;
+    std::string_view summary_view;
 
-  section_open_expanded space* => {
-    append_section({}, true);
-  };
+    if (a1 && a2 && a2 > a1) {
+      std::string_view attr(a1, a2 - a1);
 
-  section_open_aliased space* => {
-    g_debug("block [section=]");
-    append_section({ a1, a2 }, false);
-  };
+      // trim leading/trailing whitespace
+      size_t start = 0;
+      while (start < attr.size() && std::isspace(static_cast<unsigned char>(attr[start]))) start++;
+      size_t end = attr.size();
+      while (end > start && std::isspace(static_cast<unsigned char>(attr[end - 1]))) end--;
 
-  section_open_aliased_expanded space* => {
-    g_debug("block expanded [section=]");
-    append_section({ a1, a2 }, true);
+      if (end > start) {
+        attr = attr.substr(start, end - start);
+
+        // look for 'expanded' flag (either alone or before/after '=')
+        if (attr.find("expanded") != std::string_view::npos) {
+          initially_open = true;
+        }
+
+        // if there's an '=', take the part after it as the summary; otherwise
+        // if attr is not just 'expanded' then the whole attr is a summary
+        size_t eq = attr.find('=');
+        if (eq != std::string_view::npos) {
+          summary_view = attr.substr(eq + 1);
+          // trim summary
+          size_t sstart = 0;
+          while (sstart < summary_view.size() && std::isspace(static_cast<unsigned char>(summary_view[sstart]))) sstart++;
+          size_t send = summary_view.size();
+          while (send > sstart && std::isspace(static_cast<unsigned char>(summary_view[send - 1]))) send--;
+          summary_view = summary_view.substr(sstart, send - sstart);
+        } else if (attr != "expanded") {
+          summary_view = attr;
+        }
+      }
+    }
+
+    if (!summary_view.empty()) {
+      append_section({ summary_view.data(), summary_view.size() }, initially_open);
+    } else {
+      append_section({}, initially_open);
+    }
   };
 
   '[table]'i => {
